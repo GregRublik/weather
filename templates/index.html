@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прогноз погоды</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Прогноз погоды</h1>
+        <form method="POST" action="/get_weather">
+            <input type="text" name="city" id="city" placeholder="Введите город" value="{{ last_city }}" required>
+            <button type="submit">Получить прогноз</button>
+        </form>
+        <div class="weather-info">
+            {% if weather_info %}
+                <p>Температура: {{ weather_info.temperature }} °C</p>
+                <p>Скорость ветра: {{ weather_info.wind_speed }} м/с</p>
+                <p>Код погоды: {{ weather_info.weather_code }}</p>
+            {% elif error %}
+                <p>{{ error }}</p>
+            {% endif %}
+        </div>
+        {% if last_city %}
+            <h2>Ваш последний запрос: {{ last_city }}</h2>
+        {% endif %}
+            <h2>История запросов:</h2>
+    {% for item in history %}
+        <li>{{ item }}</li>
+    {% endfor %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            $('#city').autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: '/autocomplete',
+                        dataType: 'json',
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

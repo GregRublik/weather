@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    image: your-app-image
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/weather
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: weather
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
